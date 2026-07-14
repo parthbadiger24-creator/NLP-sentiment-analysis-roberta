@@ -1,44 +1,68 @@
-# NLP-sentiment-analysis-roberta
-NLP Sentiment Analysis with RoBERTa
-Binary sentiment classification of IMDb movie reviews using RoBERTa transfer learning on 50,000+ reviews. Achieved 92% accuracy with T4 GPU acceleration on Google Colab.
+# IMDb Sentiment Analysis with RoBERTa
 
-Overview
-This project implements a state-of-the-art natural language processing model for binary sentiment classification. The RoBERTa model was fine-tuned on IMDb movie reviews to classify sentiment as either positive or negative with 92% accuracy. The approach demonstrates the effectiveness of transfer learning for NLP tasks, significantly outperforming traditional baseline methods including logistic regression and Naive Bayes classifiers.
+> Fine-tuned **RoBERTa** for binary sentiment classification on IMDb movie reviews, benchmarked against classical TF-IDF baselines (Logistic Regression + Multinomial Naive Bayes).
+>
+> **SSIM916 — Machine Learning for Social Data Science, University of Exeter**
 
-Key Results
-The model achieved the following performance metrics on the test set:
+---
 
-Overall Accuracy: 92.00%
+## 🎯 Research Question
 
-Precision (Positive reviews): 93%
+Can a transfer-learning model like RoBERTa accurately classify IMDb movie reviews as positive or negative — and does it beat classical TF-IDF baselines on a small labelled sample?
 
-Recall (Positive reviews): 93%
+## 📦 Dataset
 
-F1-Score: 92%
+- **Source:** IMDb Movie Reviews (50,000 labelled reviews, balanced 25k / 25k)
+- **Working sample:** **1,000 reviews** (stratified 800 train / 200 test) — chosen to make transformer fine-tuning tractable on the available compute
+- **Labels:** `1 = positive`, `0 = negative`
 
-Precision (Negative reviews): 91%
+> ⚠️ **Honest scope:** the fine-tuning + evaluation uses a 1,000-row subset, not the full 50k. Results below should be read as a proof-of-concept comparison, not a leaderboard score.
 
-Recall (Negative reviews): 91%
+## 🧪 Methodology
 
-Comparative analysis against baseline models demonstrates RoBERTa's superiority. Logistic Regression achieved 80% accuracy while Naive Bayes reached 77%, representing a 12-15 percentage point improvement. This gap illustrates the advantages of deep learning approaches with pre-trained language models for sentiment understanding.
+| Model | Vectoriser | Training details |
+|---|---|---|
+| **RoBERTa (base)** | `roberta-base` tokenizer | 4 epochs · LR 1e-5 · batch 16 · AdamW · early stopping · `simpletransformers` |
+| Logistic Regression | TF-IDF | scikit-learn baseline |
+| Multinomial Naive Bayes | TF-IDF | scikit-learn baseline |
 
-Dataset Description
-The project utilizes the IMDb Movie Reviews dataset, which contains 50,000 highly-polarized movie reviews with binary sentiment labels. The dataset is perfectly balanced with 25,000 positive reviews and 25,000 negative reviews, eliminating class imbalance issues. Analysis of review characteristics reveals an average length of 232.53 words per review, with lengths ranging from 37 to 1,010 words. The distribution shows a right-skewed pattern, indicating that most reviews cluster between 100-300 words.
+## 📈 Results
 
-The data was split into three subsets for model development: 800 reviews for training (1.6%), 200 reviews for testing (0.4%), and 49,000 reviews remaining unlabeled. This conservative training/test split ensures rigorous evaluation while maximizing the dataset for future development.
+| Model | Test Accuracy |
+|---|---|
+| **RoBERTa (fine-tuned)** | **0.9050** |
+| Logistic Regression + TF-IDF | 0.8150 |
+| Multinomial Naive Bayes + TF-IDF | 0.7700 |
 
-Visualizations
-Three key visualizations provide insights into the data and model performance:
+Precision / recall / F1 also reported per class in the notebook. Transfer learning delivers a **~9pp accuracy gain over the strongest classical baseline** on this sample.
 
-The sentiment distribution chart displays the perfect balance between positive and negative classes in the dataset, with each comprising exactly 50% of the 50,000 reviews. This balance prevents the model from learning spurious correlations or developing biased predictions.
+## 🧰 Tech Stack
 
-The review length histogram illustrates the distribution of text lengths across the dataset. Most reviews cluster between 100-300 words, with a long tail extending to over 1,000 words. This distribution informed the choice of maximum sequence length (512 tokens) during model configuration.
+`Python` · `PyTorch` · `HuggingFace transformers` · `simpletransformers` · `scikit-learn` · `pandas` · `wordcloud` · `matplotlib`
 
-The word cloud visualization reveals the most frequently occurring terms in IMDb reviews. Dominant words include "film," "movie," "good," "character," "made," "one," and "time." These terms represent the core vocabulary of film criticism and sentiment expression in the dataset.
+## 📁 Repo Structure
 
-Technical Stack
-Python 3.12 serves as the primary programming language. PyTorch 2.0 and HuggingFace Transformers 4.57 provide the deep learning framework. The RoBERTa-base model from HuggingFace serves as the foundation for transfer learning, with fine-tuning conducted using the Simple Transformers 0.70 library for simplified training workflows.
+```text
+.
+├── notebooks/
+│   └── roberta_imdb_sentiment.ipynb
+├── docs/
+│   └── IMDB_RoBERTa_Report.pdf
+├── requirements.txt
+└── README.md
+```
 
-Data processing and manipulation were handled with Pandas 2.2 and NumPy 2.0. Visualization components include Matplotlib 3.10 for chart generation and Wordcloud 1.9 for word frequency analysis. Model evaluation utilized Scikit-learn 1.6 for baseline comparisons and standard metrics computation.
+## ▶️ Reproduce
 
-The model was trained and evaluated on Google Colab's free tier, leveraging the T4 GPU for accelerated training. The T4 GPU provided approximately 16GB of memory, sufficient for training on the batch sizes used (8 samples per batch).
+```bash
+pip install -r requirements.txt
+jupyter lab notebooks/roberta_imdb_sentiment.ipynb
+```
+
+## 📄 Report
+
+Full write-up → [`docs/IMDB_RoBERTa_Report.pdf`](docs/IMDB_RoBERTa_Report.pdf)
+
+---
+
+<sub>MIT-licensed · Author: [Parth Badiger](https://github.com/parthbadiger24-creator)</sub>
